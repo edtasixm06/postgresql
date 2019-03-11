@@ -1,0 +1,144 @@
+*********************
+INSTAL·LAR POSTGRESQL
+*********************
+
+Com a root (superusuari) del Linux:
+
+* Instal·lar el paquet del psql client i el del servidor.
+---------------------------------------------------------
+
+Els paquets s'anomenen:
+  postgresql-libs-7.4.2-1.i386.rpm (llibreries)
+  postgresql-7.4.2-1.i386.rpm (el client)
+  postgresql-server-7.4.2-1.i386.rpm (el servidor)
+ 
+Els podem instal·lar amb yum:
+
+    yum install postgresql-server 
+  
+També hi ha un paquet per a instal·lar el manual localment (recomanable):
+
+* Activar el servidor de postgres, el postmaster. 
+-------------------------------------------------
+
+Cal activar el servei del postgres: 
+  $ service postgresql initdb
+  $ service postgresql start
+
+Això activarà el servei, crearà l'estructura de treball adient, i crearà l'usuari administrador de la base de dades, l'usuari postgres
+
+Activar el servei automàticament. Si no voleu fer service postgresql start a cada inici de sessió, ai no que ho faci automàticament, cal fer
+
+    $ chkconfig --level 2345 postgresql on
+
+Modificar el password a l'administrador del postgresql amb la comanda
+
+    $ passwd postgres
+    
+que us demanarà el password que desitgeu (2 vegades).
+
+* Iniciar una sessió com  usuari postgres.
+------------------------------------------
+
+Caldrà canviar de terminal virtual on es treballa (no tanqueu la sessió actual de root):
+
+Connectar-se com a usuari postgres:
+  login: postgres
+  passwd: passwd entrat en l'apartat anterior.
+
+
+* Administrar la Base de Dades.
+-------------------------------
+
+Engegar el programa client de sql anomenat: psql, tot indicant la base de dades en la que es treballarà:
+  $ psql template1
+  
+Template1 és una estructura (un template és un contenidor) que es crea en instal·lar postgresql i què en realitat NO conté cap dada. És només l'embolcall, i servirà per a crear altres BD.
+
+* Crear un usuari per treballar en la BD.
+
+Cal crear els comptes dels usuaris que treballaran en la BD. 
+  template1=> create user nom_usuari createdb;
+  	      CREATE USER (és el que respon el psql)
+    
+En l'ordre anterior es crea un usuari que podrà treballar dins del psql i se li permetrà crear bases de dades.
+
+Connectar-se com a usuari hisi
+
+* Crear la base de dades.
+-------------------------
+ENTRAR COM A USUARI NORMAL
+	$ psql template1
+Crear la base de dades training (és el nom que donarem a la base de dades d'aprenentatge) amb el vostre usuari.
+  template1=> create database training;
+  	      CREATEDB (és el que respon el sql)
+    
+Fixa't que totes les sentències sql acaben en ;
+
+Pots comprovar que s'ha creat la BD llistant les bases de dades
+del psql:
+   template1=> \l
+
+L'ordre anterior llista les bases de dades.
+
+També post mirar la llista de comandes de l'entorn client de postgresql anomenat psql amb l'ordre:
+  template1=> \?
+  
+I si volem obtenir ajuda de les ordres de SQL podem usar:
+  template1=> \h ordre_sql
+
+* Activar la base de dades training.
+
+Per fer-ho cal sortir la de template1 i entrar  (activar) la base de dades training:
+  template1=> \c training
+  
+La comanda \c crea una nova connexió a una nova BD.
+
+* Crear les taules de la base de dades.
+-----------------------------------------
+Els fitxers necessaris són a:
+
+/home/groups/inf/hisx1/MP2-Base de dades/instalacions_i_configuracions/training
+
+Disposem d'un conjunt de fitxers d'ordres que cada un d'ells crea l'estructura d'una taula.
+Cada un d'ells s'anomena: <taula>.sql
+Les cinc taules que utilitzarem són: clientes, oficinas, pedidos, productos i repventas.
+
+Per tal de crear l'estructura de cada taula, caldrà fer per a cada una (afegir path si cal!!):
+  training=> \i <taula>.sql
+El comandament \i executa les ordres sql que són al fitxer (el podeu mirar amb qualsevol editor)
+
+Podem comprovar que realment s'ha creat l'estructura d'una taula amb l'ordre psql:
+  training=>\d <taula>
+
+* Omplir de contingut les taules de dades.
+------------------------------------------
+
+També disposem (al mateix directori training) d'un conjunt de fitxers de dades (ja plens) corresponents a cada taula. El que farem és copiar el contingut de cada fitxer en la taula corresponent.
+  Cada un d'ells s'anomena: <taula>.dat
+Per tal de copiar les dades farem (afegir path si cal):
+  training=> \copy <taula> from '<taula>.dat'
+
+Podem comprovar que realment s'ha omplert de contingut una taula amb l'ordre sql:
+  training=> select * from <taula>;
+
+ 
+************************
+DESINSTAL·LAR POSTGRESQL
+************************
+
+* Eliminar la base de dades training
+
+  Des del psql conectar al la base de dades template1 i escriure l'ordre SQL que elimina una base de dades.   Per fer-ho cal ser l'usuari administrador de la base de dades, és a dir, postgres.
+  Obrir una sessió com a postgres i conectar-se a template1.
+  Template1# Drop database training;
+
+* Aturar el servei del postgres com a usuari administrador del sistema, usuari root:
+  # service postgresql stop
+
+* Eliminar els paquets del postgres, també com a administrador del sistema.
+  # yum erase postgresql-server
+  # yum erase postgresql
+   
+
+
