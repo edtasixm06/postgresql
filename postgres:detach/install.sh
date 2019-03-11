@@ -26,14 +26,11 @@ PGDATA=/var/lib/pgsql/data
 export OOMScoreAdjust PG_OOM_ADJUST_FILE PG_OOM_ADJUST_VALUE PGSTARTTIMEOUT PGDATA 
 pg_ctl initdb 
 /usr/bin/pg_ctl -D /var/lib/pgsql/data -l logfile start
-exit
 
 cp /opt/docker/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf
 cp /opt/docker/postgresql.conf /var/lib/pgsql/data/postgresql.conf
-
-# --------------------------
 /usr/libexec/postgresql-ctl restart
-su -l postgres
+
 psql template1
 CREATE USER edtasixm06;
 create database training;
